@@ -91,15 +91,32 @@ AFRAME.registerComponent("portal", {
         sceneEl.appendChild(portalManager);
     }
     let portals = sceneEl.portals;
-    let destinationPortal = document.querySelector(data.destination);
+    if(href.length < 1){
+      this.destinationPortal = document.querySelector(data.destination);
+    } else {
+      this.destinationPortal = this.el;
+    }
     // if (href.length < 1) {
       portals.push({
         portal: el.object3D,
-        destination: destinationPortal.object3D,
+        destination: href.length < 1 ? null : this.destinationPortal.object3D,
         maxRecursion: data.maxRecursion,
         distance: 0,
       });
     // }
+
+    if(href.length > 0) {
+      console.log("collider")
+      const collider = document.createElement('a-box');
+      collider.setAttribute("visible", false)
+      collider.setAttribute("class", "navmesh-hole")
+      collider.setAttribute("position", `0 -${this.el.object3D.position.y} -0.03`)
+      collider.setAttribute("width", 2)
+      collider.setAttribute("height", .4)
+      collider.setAttribute("depth", .15)
+      this.el.appendChild(collider);
+      this.el.sceneEl.camera.el.components['simple-navmesh-constraint'].update();
+    }
 
     this.el.object3D.renderable = true;
   },
