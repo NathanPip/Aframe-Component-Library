@@ -7,21 +7,20 @@
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <title>ARTFX Component Library</title>
     <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
-    <script src="./components/Audio Components/audio-controller/audio-controller.js" type="module"></script>
-    <script src="./components/Audio Components/reduce-audio/reduce-audio.js" type="module"></script>
-    <script src="./components/dom-to-3d/DomTo3D.js" type="module"></script>
-    <script src="./components/href-click-component/aframe-href-component.js" type="module"></script>
-    <script src="./components/loading-manager/loading-manager.js" type="module"></script>
-    <script src="./components/mobile-controls/mobile-controls.js" type="module"></script>
-    <script src="./components/navmesh-constraints/simple-navmesh-constraint.js" type="module"></script>
-    <script src="./components/streaming-animation/streaming-payments.js" type="module"></script>
-    <script src="./components/transform-components/transform-components.js" type="module"></script>
+    <script src="./components/Audio Components/audio-controller/audio-controller.js" ></script>
+    <script src="./components/Audio Components/reduce-audio/reduce-audio.js" ></script>
+    <script src="./components/dom-to-3d/DomTo3D.js" ></script>
+    <script src="./components/href-click-component/aframe-href-component.js" ></script>
+    <script src="./components/loading-manager/loading-manager.js" ></script>
+    <script src="./components/mobile-controls/mobile-controls.js" ></script>
+    <script src="./components/navmesh-constraints/simple-navmesh-constraint.js" ></script>
+    <script src="./components/streaming-animation/streaming-payments.js" ></script>
+    <script src="./components/transform-components/transform-components.js" ></script>
   </head>
   <body>
     <a-scene
       renderer="alpha:true;physicallyCorrectLights:false;colorManagement:true;"
       reflections="directionalLight:#dirLight"
-      lock-cursor="enabled: true"
       loading-screen="enabled:false"
       gltf-model="dracoDecoderPath: ./decoder/;"
       loading-manager
@@ -43,6 +42,7 @@
         twoway-movement="speed: 15;"
         tilt-turn="criticalAngle: 20"
         simple-navmesh-constraint="navmesh:.navmesh;fall:1;height:1.8;exclude:.navmesh-hole;"
+        lock-cursor="enabled: true"
       >
       </a-entity>
 

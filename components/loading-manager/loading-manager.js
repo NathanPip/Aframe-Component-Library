@@ -1,4 +1,10 @@
-import { delay } from "../helpers.js";
+export function delay(milisec) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve("");
+    }, milisec);
+  });
+}
 
 AFRAME.registerComponent("loading-manager", {
   schema: {
