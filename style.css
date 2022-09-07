@@ -1,154 +1,9 @@
 body {
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     background-color: black;
-    color: white;
+    color: black;
+    box-sizing: border-box;
   }
-  
-  .overlay-footer {
-    position: absolute;
-    inset: auto 0 0 0;
-  }
-  
-  .a-dom-overlay button {
-    padding: 1em;
-    appearance: none;
-    background: #00000055;
-    border: 3px solid white;
-    border-radius: 1em;
-    margin: 1em 1em 0 0;
-    color: white;
-  }
-  
-  #my-interface {
-    user-select: none;
-  }
-  
-  #my-interface h2 {
-    margin: 0;
-  }
-  
-  #my-interface fieldset {
-    padding: 0;
-    margin-bottom: 0.5em;
-  }
-  
-  #dom-overlay-message {
-    padding: 1em;
-    background: #33333355;
-    border-top: 5px solid #ffffff55;
-    color: white;
-  }
-
-  @-webkit-keyframes rotation {
-    from {
-        -webkit-transform: rotate(0deg);
-    }
-    to {
-        -webkit-transform: rotate(360deg);
-    }
-}
-
-
-p{
-  text-align: center;
-  position: relative;
-}
-
-.xumm {
-  display: inline-block;
-  position: relative;
-  background-color: white;
-}
-
-/*https://loading.io/css/*/
-  .lds-grid {
-    display: inline-block;
-    position: relative;
-    width: 80px;
-    height: 80px;
-  }
-  .lds-grid div {
-    position: absolute;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: #dfc;
-    animation: lds-grid 1.2s linear infinite;
-  }
-  .lds-grid div:nth-child(1) {
-    top: 8px;
-    left: 8px;
-    animation-delay: 0s;
-  }
-  .lds-grid div:nth-child(2) {
-    top: 8px;
-    left: 32px;
-    animation-delay: -0.4s;
-  }
-  .lds-grid div:nth-child(3) {
-    top: 8px;
-    left: 56px;
-    animation-delay: -0.8s;
-  }
-  .lds-grid div:nth-child(4) {
-    top: 32px;
-    left: 8px;
-    animation-delay: -0.4s;
-  }
-  .lds-grid div:nth-child(5) {
-    top: 32px;
-    left: 32px;
-    animation-delay: -0.8s;
-  }
-  .lds-grid div:nth-child(6) {
-    top: 32px;
-    left: 56px;
-    animation-delay: -1.2s;
-  }
-  .lds-grid div:nth-child(7) {
-    top: 56px;
-    left: 8px;
-    animation-delay: -0.8s;
-  }
-  .lds-grid div:nth-child(8) {
-    top: 56px;
-    left: 32px;
-    animation-delay: -1.2s;
-  }
-  .lds-grid div:nth-child(9) {
-    top: 56px;
-    left: 56px;
-    animation-delay: -1.6s;
-  }
-  @keyframes lds-grid {
-    0%, 100% {
-      opacity: 1;
-    }
-    50% {
-      opacity: 0.5;
-    }
-  }
-  p.specialColor{
-    color:#dfc;
-    text-align: center;
-  }
-
-  #mobile {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-    font-size: 1.0rem;
-    font-family: 'Roboto', sans-serif;
-    color: #fff;
-    background-color: #000;
-    padding: 1rem;
-    border-radius: 0.5rem;
-    border: 1px solid #fff;
-    box-shadow: 0 0 0.5rem rgba(0,0,0,0.5);
-    display: none;
-}
 
 #loading-div {
   width: 80px; 
@@ -184,33 +39,102 @@ p{
   text-shadow: 2px 1px #000;
 }
 
+.ui-container .bar {
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  height: 5em;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.ui-btn {
+  padding: 1em;
+  border-radius: 50%;
+  border: 2px solid;
+  background: transparent;
+  border-color: rgba(63, 89, 208, 0.7);
+}
+.ui-btn img {
+  width: 2em;
+  height: 2em;
+}
+.ui-btn:hover {
+  cursor: pointer;
+}
+.util-btn-group {
+  color: black;
+  flex: 1;
+  display: flex;
+  justify-content: space-around;
+}
+
+.info-btn-group {
+  flex: 1;
+}
+
+.support-btn-group {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  padding-inline: 1em;
+}
+
+
+.box {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: absolute;
+  margin-inline: 1em;
+  background-color: white;
+  border-radius: 1em;
+
+}
+
+.settings-box {
+  top: 0;
+  right: 0;
+  margin-top: 1em;
+  height: 30em;
+  width: 35em;
+}
+
+.chat-box {
+  bottom: 5em;
+  right: 0;
+  margin-bottom: 1em;
+  height: 30em;
+  max-height: 25em;
+  width: 25em;
+}
+.chat-box .input-group {
+  padding: .5em 1em;
+  display: flex;
+  justify-content: space-around;
+}
+
+.chat-box .chat-input {
+  flex: 4;
+  border: 1px solid rgba(63, 89, 208, 0.5);
+  padding: .15em .3em;
+  resize: none;
+}
+
+.chat-box .send-chat {
+  flex: 1;
+  margin-inline: 1em;
+  background-color: rgba(63, 89, 208, 0.7);
+  color: white;
+  border: none;
+  border-radius: .25em;
+  padding: .5em 1em;
+  
+}
+
 @keyframes fadeIn {
   0% { opacity: 0; }
   100% { opacity: 1; }
-}
-
-#footer {
-  position: absolute;
-  display: block;
-  bottom: 0;
-  background-color: rgba(0,0,0,0.20);
-  color: #fff;
-  text-align: center;
-  font-size: 0.75rem;
-  font-family: 'Roboto', sans-serif;
-  padding: 0.75rem;
-  margin: 1rem;
-}
-
-#footer a {
-  color: #fff;
-  text-decoration: none;
-  padding-right: 0.5rem;
-}
-
-#footer a:hover {
-  color: rgb(9, 151, 245);
-  text-decoration: none;
-  font-weight: bold;
-  padding-right: 0.5rem;
 }
