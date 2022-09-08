@@ -26,6 +26,7 @@
       loading-screen="enabled:false" 
       gltf-model="dracoDecoderPath: ./decoder/;" 
       vr-mode-ui="enabled: false"
+      ui-system="isNetworked: false"
       loading-manager>
       <a-assets> </a-assets>
       <!-- User -->
@@ -64,5 +65,8 @@
         </div>
       </div>
     </div> -->
+    <script>
+      document.querySelector("a-scene").systems["ui-system"].initialize();
+    </script>
   </body>
 </html>

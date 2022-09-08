@@ -8,7 +8,7 @@ AFRAME.registerSystem("ui-system", {
     isNetworked: { default: false },
   },
 
-  firstInit: function () {
+  initialize: function () {
     this.bindHandlers();
 
     this.uiContainer = document.createElement("div");
