@@ -1,12 +1,11 @@
 AFRAME.registerSystem('ui-system', {
     schema: {
+        enabled: {default: true},
         chatEnabled: {default: true},
         voiceEnabled: {default: true},
-        iconPath: {default: '/'},
-        chatIcon: {default: 'chat-svg'},
-        voiceIcon: {default: 'microphone-svg'},
         infoIcon: {default: null},
-        settingsIcon: {default: null}
+        settingsIcon: {default: null},
+        isNetworked: {default: true}
     },
 
     init: function () {
@@ -32,11 +31,11 @@ AFRAME.registerSystem('ui-system', {
 
       this.createSettings();
 
-      if(this.data.voiceEnabled) {
+      if(this.data.isNetworked && this.data.voiceEnabled) {
         this.createVoice();
       }   
 
-      if(this.data.chatEnabled) {
+      if(this.data.isNetworked && this.data.chatEnabled) {
         this.createChat();
       }
 
@@ -45,8 +44,8 @@ AFRAME.registerSystem('ui-system', {
       this.uiBar.appendChild(this.supportBtnGroup);
 
       this.uiContainer.appendChild(this.uiBar);
-
-      document.body.appendChild(this.uiContainer);
+      if(this.data.enabled)
+        document.body.appendChild(this.uiContainer);
 
     },
 
