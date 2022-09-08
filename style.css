@@ -131,7 +131,23 @@ body {
   border: none;
   border-radius: .25em;
   padding: .5em 1em;
-  
+}
+
+.chat {
+  color: black;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-inline: 1em;
+}
+
+p {
+  margin-top: .4em;
+  margin-bottom: 0;
+}
+
+button:hover {
+  cursor: pointer;
 }
 
 @keyframes fadeIn {
