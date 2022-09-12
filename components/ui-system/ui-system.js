@@ -1,4 +1,4 @@
-AFRAME.registerSystem("ui-system", {
+AFRAME.registerComponent("ui-system", {
   schema: {
     enabled: { default: true },
     chatEnabled: { default: true },
@@ -20,9 +20,6 @@ AFRAME.registerSystem("ui-system", {
     this.infoBtnGroup = document.createElement("div");
     this.infoBtnGroup.setAttribute("class", "info-btn-group");
 
-    const infoBtn = document.createElement("button");
-    infoBtn.setAttribute("class", "info-btn");
-
     this.utilBtnGroup = document.createElement("div");
     this.utilBtnGroup.setAttribute("class", "util-btn-group");
 
@@ -30,6 +27,7 @@ AFRAME.registerSystem("ui-system", {
     this.supportBtnGroup.setAttribute("class", "support-btn-group");
 
     this.createSettings();
+    this.createInfo();
 
     if (this.data.isNetworked && this.data.voiceEnabled) {
       this.createVoice();
@@ -136,6 +134,46 @@ AFRAME.registerSystem("ui-system", {
     this.settingsButton.addEventListener("click", () => {
       this.hideElement(this.settingsBox, this.settingsOpen);
       this.settingsOpen = !this.settingsOpen;
+    });
+  },
+
+  createInfo: function() {
+    this.infoBtn = document.createElement("button");
+    this.infoBtn.setAttribute("class", "ui-btn info");
+
+    this.infoBtnGroup.appendChild(this.infoBtn);
+
+    this.infoBox = document.createElement("div");
+    this.infoBox.setAttribute("class", "box info-box");
+
+    this.uiContainer.appendChild(this.infoBox);
+
+    this.infoOpen = false;
+
+    this.infoList = document.createElement("ul");
+    this.infoList.setAttribute("class", "info-list");
+
+    this.tosItem = document.createElement("li");
+    this.tosLink = document.createElement("a");
+    this.tosItem.setAttribute("class", "info-item");
+    this.tosLink.setAttribute("href", "https://artfx.info/tos.html");
+    this.tosLink.innerText = "Terms of Service";
+    this.tosItem.appendChild(this.tosLink);
+
+    this.privacyItem = document.createElement("li");
+    this.privacyLink = document.createElement("a");
+    this.privacyItem.setAttribute("class", "info-item");
+    this.privacyLink.setAttribute("href", "https://www.termsfeed.com/live/dee69382-bfa3-403e-b74f-d0b681915514");
+    this.privacyLink.innerText = "Privacy";
+    this.privacyItem.appendChild(this.privacyLink);
+
+    this.infoList.appendChild(this.tosItem);
+    this.infoList.appendChild(this.privacyItem);
+    this.infoBox.appendChild(this.infoList);
+
+    this.infoBtn.addEventListener("click", () => {
+      this.hideElement(this.infoBox, this.infoOpen);
+      this.infoOpen = !this.infoOpen;
     });
   },
 
