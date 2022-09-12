@@ -1,4 +1,4 @@
-export function delay(milisec) {
+function delay(milisec) {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve("");
