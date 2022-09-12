@@ -3,6 +3,7 @@ AFRAME.registerComponent("ui-system", {
     enabled: { default: true },
     chatEnabled: { default: true },
     voiceEnabled: { default: true },
+    settingsEnabled: { default: true },
     infoIcon: { default: null },
     settingsIcon: { default: null },
     isNetworked: { default: false },
@@ -10,6 +11,10 @@ AFRAME.registerComponent("ui-system", {
 
   initialize: function () {
     this.bindHandlers();
+    if(!window.NAF){
+      console.log("scene is not networked");
+      this.data.isNetworked = false;
+    }
 
     this.uiContainer = document.createElement("div");
     this.uiContainer.setAttribute("class", "ui-container");
@@ -26,7 +31,10 @@ AFRAME.registerComponent("ui-system", {
     this.supportBtnGroup = document.createElement("div");
     this.supportBtnGroup.setAttribute("class", "support-btn-group");
 
-    this.createSettings();
+    if (this.data.settingsEnabled) {
+      this.createSettings();
+    }
+    
     this.createInfo();
 
     if (this.data.isNetworked && this.data.voiceEnabled) {
@@ -105,7 +113,7 @@ AFRAME.registerComponent("ui-system", {
 
     this.chatInput.addEventListener("keydown", (e) => {
       if (e.code === "Enter") {
-        if(!e.shiftKey){
+        if (!e.shiftKey) {
           e.preventDefault();
           this.sendMessage();
         }
@@ -155,7 +163,7 @@ AFRAME.registerComponent("ui-system", {
     });
   },
 
-  createInfo: function() {
+  createInfo: function () {
     this.infoBtn = document.createElement("button");
     this.infoBtn.setAttribute("class", "ui-btn info");
 
