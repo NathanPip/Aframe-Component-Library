@@ -87,6 +87,13 @@ a {
   padding-inline: 1em;
 }
 
+.ui-btn.close {
+  position: absolute;
+  right: 0;
+  margin: 1em;
+  font-size: 1em;
+  padding: .25em .5em;
+}
 
 .box {
   display: none;

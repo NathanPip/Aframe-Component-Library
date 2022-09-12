@@ -65,6 +65,11 @@ AFRAME.registerComponent("ui-system", {
     this.chatBox = document.createElement("div");
     this.chatBox.setAttribute("class", "box chat-box");
 
+    this.chatClose = document.createElement("button");
+    this.chatClose.setAttribute("class", "ui-btn close");
+    this.chatClose.innerText = "X";
+    this.chatBox.appendChild(this.chatClose);
+
     this.chat = document.createElement("div");
     this.chat.setAttribute("class", "chat");
 
@@ -90,6 +95,10 @@ AFRAME.registerComponent("ui-system", {
     this.uiContainer.appendChild(this.chatBox);
 
     this.chatButton.addEventListener("click", () => {
+      this.hideElement(this.chatBox, this.chatOpen);
+      this.chatOpen = !this.chatOpen;
+    });
+    this.chatClose.addEventListener("click", () => {
       this.hideElement(this.chatBox, this.chatOpen);
       this.chatOpen = !this.chatOpen;
     });
@@ -126,12 +135,21 @@ AFRAME.registerComponent("ui-system", {
     this.settingsBox = document.createElement("div");
     this.settingsBox.setAttribute("class", "box settings-box");
 
+    this.settingsClose = document.createElement("button");
+    this.settingsClose.setAttribute("class", "ui-btn close");
+    this.settingsClose.innerText = "X";
+    this.settingsBox.appendChild(this.settingsClose);
+
     this.settingsOpen = false;
 
     this.supportBtnGroup.appendChild(this.settingsButton);
     this.uiContainer.appendChild(this.settingsBox);
 
     this.settingsButton.addEventListener("click", () => {
+      this.hideElement(this.settingsBox, this.settingsOpen);
+      this.settingsOpen = !this.settingsOpen;
+    });
+    this.settingsClose.addEventListener("click", () => {
       this.hideElement(this.settingsBox, this.settingsOpen);
       this.settingsOpen = !this.settingsOpen;
     });
