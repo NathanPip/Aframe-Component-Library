@@ -17,10 +17,14 @@ class LoadScreen {
   }
 
   init() {
-    document.querySelector("a-scene").style.display = "none";
+    this.mainScene = document.querySelector("a-scene");
+    this.mainScene.style.display = "none";
+    this.mainScene.addEventListener("loaded", () => {
+      this.remove();
+    })
     this.renderer.setPixelRatio(window.devicePixelRatio);
     this.renderer.setSize(window.innerWidth, window.innerHeight);
-    console.log("called")
+    this.renderer.xr.enabled = true;
     this.renderer.domElement.classList.add("loading-scene");
     this.renderer.domElement.style.zIndex = -1;
     this.renderer.domElement.style.position = "fixed";
@@ -47,7 +51,7 @@ class LoadScreen {
 
 
     const geometry = new THREE.TorusKnotGeometry( 10, 3, 100, 16 );
-    const material = new THREE.MeshStandardMaterial( { color: 0x5FEAF4, roughness: .15, metalness: 1 } );
+    const material = new THREE.MeshStandardMaterial( { color: 0xfffff, roughness: .15, metalness: 1 } );
     this.torusKnot = new THREE.Mesh( geometry, material );
 
     this.loaderScene.add(this.torusKnot );
@@ -63,12 +67,16 @@ class LoadScreen {
   }
 
   render() {
-    requestAnimationFrame(() => {
+    this.renderer.setAnimationLoop(() => {
       let time = this.clock.getElapsedTime();
       this.torusKnot.rotation.y = .5 * time;
       this.renderer.render(this.loaderScene, this.camera);
-      this.render();
     })
+  }
+
+  remove() {
+    this.mainScene.style.display = "block";
+    this.renderer.domElement.remove();
   }
 }
 
