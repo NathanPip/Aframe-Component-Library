@@ -7,21 +7,23 @@ function delay(milisec) {
 }
 
 class LoadScreen {
-  constructor(enabled) {
-    this.enabled = enabled;
+  constructor(enabled, clickToStart) {
+    this.enabled = enabled ? enabled : true;
+    this.clickToStart = clickToStart ? clickToStart : true;
     this.loaderScene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(80, window.innerWidth / window.innerHeight, 0.0005, 10000);
     this.renderer = new THREE.WebGLRenderer({antialias: true});
     this.clock = new THREE.Clock();
-    this.init();
+    this.init = this.init.bind(this);
+    setTimeout(this.init, 1);
   }
 
   init() {
+    this.loaded = this.loaded.bind(this);
+    this.remove = this.remove.bind(this);
     this.mainScene = document.querySelector("a-scene");
     this.mainScene.style.display = "none";
-    this.mainScene.addEventListener("loaded", () => {
-      this.remove();
-    })
+    this.mainScene.addEventListener("loaded", this.loaded)
     this.renderer.setPixelRatio(window.devicePixelRatio);
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.renderer.xr.enabled = true;
@@ -57,6 +59,8 @@ class LoadScreen {
     this.loaderScene.add(this.torusKnot );
     this.torusKnot.position.z = -60;
 
+    this.createTitle();
+
     this.render();
   }
 
@@ -76,9 +80,37 @@ class LoadScreen {
 
   remove() {
     this.mainScene.style.display = "block";
-    this.renderer.domElement.remove();
+    removeEventListener("click", this.click);
+    removeEventListener("keydown", this.keydown);
+    this.titleBackground.classList.add("exit");
+    const sceneEl = this.renderer.domElement
+    setTimeout(() => {sceneEl.remove()}, 1600)
+  }
+
+  loaded() {
+    if(this.clickToStart) {
+    const clickToStart = document.querySelector(".loading-screen h2");
+    clickToStart.style.opacity = 1;
+    this.click = addEventListener("click", this.remove);
+    this.keydown = addEventListener("keydown", this.remove);
+    } else {
+      this.remove();
+    }
+  }
+
+  createTitle() {
+    this.titleBackground = document.createElement("div");
+    this.titleBackground.classList.add("loading-screen");
+    const title = document.createElement("h1");
+    title.innerHTML = document.title;
+    const clickStart  = document.createElement("h2");
+    clickStart.innerText = "Interact to Start";
+    this.titleBackground.appendChild(title);
+    this.titleBackground.appendChild(clickStart);
+    document.body.appendChild(this.titleBackground);
   }
 }
+const loadScene = new LoadScreen();
 
 AFRAME.registerComponent("loading-manager", {
   schema: {

@@ -25,24 +25,12 @@
       reflections="directionalLight:#dirLight" 
       loading-screen="enabled:false" 
       gltf-model="dracoDecoderPath: ./decoder/;" 
-      vr-mode-ui="enabled: false"
-      load-screen>
+      vr-mode-ui="enabled: false">
       <a-assets>
-        <a-asset-item id="dome-glb" src="/ARTFX_INFO_Dome.glb"></a-asset-item>
-        <a-asset-item id="watch-glb" src="/Unimatic_Watch_5_3_22.glb"></a-asset-item>
-        <a-asset-item id="pottery-glb" src="/ARTFX_Pottery.glb"></a-asset-item>
-        <a-asset-item id="scans-glb" src="/Scans.glb"></a-asset-item>
-        <a-asset-item id="rocks-glb" src="/Rocks.glb"></a-asset-item>
       </a-assets>
       <!-- User -->
       <!-- Camera -->
       <a-entity id="player" camera cursor="rayOrigin: mouse" raycaster="far: 20; interval: 1000; objects: .clickable" look-controls="pointerLockEnabled: false" position="1.3 1.8 3.5" rotation="0 0 0" wasd-controls="acceleration:15;" twoway-movement="speed: 15;" tilt-turn="criticalAngle: 20" simple-navmesh-constraint="navmesh:.navmesh;fall:1;height:1.8;exclude:.navmesh-hole;" lock-cursor="enabled: true"> </a-entity>
-
-      <a-entity gltf-model="#dome-glb"></a-entity>
-      <a-entity gltf-model="#watch-glb"></a-entity>
-      <a-entity gltf-model="#pottery-glb"></a-entity>
-      <a-entity gltf-model="#scans-glb"></a-entity>
-      <a-entity gltf-model="#rocks-glb"></a-entity>
 
       <a-entity ui-system="isNetworked: false;"></a-entity>
 
@@ -87,7 +75,6 @@
       </div>
     </div> -->
     <script>
-      const loadScene = new LoadScreen();
     </script>
   </body>
 </html>
