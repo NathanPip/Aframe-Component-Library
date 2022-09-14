@@ -32,8 +32,7 @@
       <!-- Camera -->
       <a-entity id="player" camera cursor="rayOrigin: mouse" raycaster="far: 20; interval: 1000; objects: .clickable" look-controls="pointerLockEnabled: false" position="1.3 1.8 3.5" rotation="0 0 0" wasd-controls="acceleration:15;" twoway-movement="speed: 15;" tilt-turn="criticalAngle: 20" simple-navmesh-constraint="navmesh:.navmesh;fall:1;height:1.8;exclude:.navmesh-hole;" lock-cursor="enabled: true"> </a-entity>
 
-      <a-entity ui-system="isNetworked: false;"></a-entity>
-
+      <a-entity ui-system="isNetworked: false;" info-buttons="Controls, blue; News, red;"></a-entity>
 
       <a-box position="-1 1 -3" rotation="0 0 0" color="#4CC3D9"></a-box>
       <a-plane position="-1 0 -4.5" rotation="-90 0 0" width="60" height="60" color="#7BC8A4"></a-plane>
