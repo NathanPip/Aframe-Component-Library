@@ -11,7 +11,7 @@ AFRAME.registerComponent("ui-system", {
 
   initialize: function () {
     this.bindHandlers();
-    if(!window.NAF){
+    if (!window.NAF) {
       console.log("scene is not networked");
       this.data.isNetworked = false;
     }
@@ -34,7 +34,7 @@ AFRAME.registerComponent("ui-system", {
     if (this.data.settingsEnabled) {
       this.createSettings();
     }
-    
+
     this.createInfo();
 
     if (this.data.isNetworked && this.data.voiceEnabled) {
@@ -164,6 +164,35 @@ AFRAME.registerComponent("ui-system", {
   },
 
   createInfo: function () {
+    const customsButtons = this.el.getAttribute("info-buttons");
+    let buttonsArr = customsButtons.split(";");
+    buttonsArr = buttonsArr.map(button => {
+      if(button.length) {
+        button = button.split(",");
+        for(let i=0; i<button.length; i++) {
+          button[i] = button[i].trim();
+        }
+        const listItem = document.createElement("li");
+        listItem.classList.add("info-item");
+        if(button[1] && button[1] !== "null"){
+          listItem.classList.add(button[1])
+        }
+        if(button[2]) {
+          const link = document.createElement("a");
+          link.href = button[2];
+          link.innerText = button[0];
+          link.classList.add("info-link");
+          listItem.appendChild(link);
+        } else {
+          const btn = document.createElement("button");
+          btn.innerText = button[0];
+          listItem.appendChild(btn);
+        }
+        return listItem;
+      }
+      return null;
+    })
+
     this.infoBtn = document.createElement("button");
     this.infoBtn.setAttribute("class", "ui-btn info");
 
@@ -178,6 +207,12 @@ AFRAME.registerComponent("ui-system", {
 
     this.infoList = document.createElement("ul");
     this.infoList.setAttribute("class", "info-list");
+
+    for(let item of buttonsArr) {
+      if(item !== null) {
+        this.infoList.appendChild(item);
+      }
+    }
 
     this.tosItem = document.createElement("li");
     this.tosLink = document.createElement("a");
