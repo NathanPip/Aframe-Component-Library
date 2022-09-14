@@ -87,6 +87,10 @@ class LoadScreen {
       this.titleBackground.classList.add("exit");
       setTimeout(() => this.titleBackground.remove(), 1500)
     }
+    const ui = document.querySelector("[ui-system]")
+    if(ui) {
+      ui.components["ui-system"].initialize();
+    }
     const mainScene = document.querySelector("a-scene");
     mainScene.style = "display: block;";
     console.log("removed")

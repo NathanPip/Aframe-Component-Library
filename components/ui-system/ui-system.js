@@ -1,12 +1,20 @@
 AFRAME.registerComponent("ui-system", {
   schema: {
     enabled: { default: true },
+    waitForLoad: {default: true},
     chatEnabled: { default: true },
     voiceEnabled: { default: true },
     settingsEnabled: { default: true },
     infoIcon: { default: null },
     settingsIcon: { default: null },
     isNetworked: { default: false },
+  },
+
+  init: function() {
+    this.initialize = this.initialize.bind(this);
+    if(this.data.waitForLoad === false) {
+      setTimeout(()=>{this.initialize()}, 10);
+    }
   },
 
   initialize: function () {
@@ -284,3 +292,7 @@ AFRAME.registerComponent("ui-system", {
     this.sendMessage = this.sendMessage.bind(this);
   },
 });
+
+function onConnect() {
+  document.querySelector("a-scene").systems["ui-system"].initialize();
+}
