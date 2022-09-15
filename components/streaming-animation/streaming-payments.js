@@ -32,6 +32,7 @@ if (document.monetization) {
 
 AFRAME.registerComponent("streaming-animation", {
   init: function () {
+    if(!document.monetization) return;
     this.el.setAttribute("visible", true);
     document.monetization.addEventListener("monetizationstart", () => {
       this.el.setAttribute("visible", true);

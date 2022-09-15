@@ -63,7 +63,7 @@ class LoadScreen {
     this.createTitle();
     this.render();
 
-    addEventListener("scene-loaded", this.loaded);
+    window.addEventListener("scene-loaded", this.loaded);
   }
 
   resize() {
@@ -137,7 +137,7 @@ AFRAME.registerSystem("loading-manager", {
 
   loaded: function() {
     console.log("loaded");
-    setTimeout(()=>{this.Load.loaded(); this.loadStart()}, 10);
+    setTimeout(()=>{this.loadStart()}, 10);
   },
 
   loadStart: async function () {
@@ -145,8 +145,8 @@ AFRAME.registerSystem("loading-manager", {
     this.elPostLoadEvents = [];
     this.elLoadEvents = [];
     this.preLoad();
-    callElementPreLoadFunctions(this.el);
     await callElementLoadFunctions(this.el);
+    await delay(2000);
     this.postLoad();
     window.dispatchEvent(this.loadedEvent);
   },
@@ -158,6 +158,7 @@ AFRAME.registerSystem("loading-manager", {
         if (this.el.components[comp].preLoad && this.el.components[comp].attrName !== "loading-manager") this.el.components[comp].preLoad();
       }
     }
+    callElementPreLoadFunctions(this.el);
   },
 
   postLoad: function () {
