@@ -1,7 +1,7 @@
 AFRAME.registerComponent("ui-system", {
   schema: {
     enabled: { default: true },
-    waitForLoad: {default: true},
+    waitForLoad: { default: true },
     chatEnabled: { default: true },
     voiceEnabled: { default: true },
     settingsEnabled: { default: true },
@@ -10,10 +10,12 @@ AFRAME.registerComponent("ui-system", {
     isNetworked: { default: false },
   },
 
-  init: function() {
+  init: function () {
     this.initialize = this.initialize.bind(this);
-    if(this.data.waitForLoad === false) {
-      setTimeout(()=>{this.initialize()}, 10);
+    if (this.data.waitForLoad === false) {
+      setTimeout(() => {
+        this.initialize();
+      }, 10);
     }
   },
 
@@ -76,13 +78,15 @@ AFRAME.registerComponent("ui-system", {
   createChat: function () {
     this.chatButton = document.createElement("button");
     this.chatButton.setAttribute("class", "ui-btn chat");
+    this.chatButton.style.backgroundImage = "url(/assets/chat-svg.svg)";
+
     this.utilBtnGroup.appendChild(this.chatButton);
 
     this.chatBox = document.createElement("div");
     this.chatBox.setAttribute("class", "box chat-box");
 
     this.chatClose = document.createElement("button");
-    this.chatClose.setAttribute("class", "ui-btn close");
+    this.chatClose.setAttribute("class", "close-btn");
     this.chatClose.innerText = "X";
     this.chatBox.appendChild(this.chatClose);
 
@@ -136,6 +140,7 @@ AFRAME.registerComponent("ui-system", {
   createVoice: function () {
     this.voiceBtn = document.createElement("button");
     this.voiceBtn.setAttribute("class", "ui-btn mic on");
+    this.voiceBtn.style.backgroundImage = "url(/assets/microphone-svg.svg)";
 
     NAF.connection.adapter.easyrtc.enableMicrophone(true);
 
@@ -147,14 +152,21 @@ AFRAME.registerComponent("ui-system", {
   createSettings: function () {
     this.settingsButton = document.createElement("button");
     this.settingsButton.setAttribute("class", "ui-btn settings");
+    this.settingsButton.style.backgroundImage =
+      "url(/assets/settings-cogwheel-svgrepo-com.svg)";
 
     this.settingsBox = document.createElement("div");
     this.settingsBox.setAttribute("class", "box settings-box");
 
     this.settingsClose = document.createElement("button");
-    this.settingsClose.setAttribute("class", "ui-btn close");
+    this.settingsClose.setAttribute("class", "close-btn settings-close");
     this.settingsClose.innerText = "X";
     this.settingsBox.appendChild(this.settingsClose);
+
+    this.settingsTitle = document.createElement("h2");
+    this.settingsTitle.setAttribute("class", "settings-title");
+    this.settingsTitle.innerText = "Preferences";
+    this.settingsBox.appendChild(this.settingsTitle);
 
     this.settingsOpen = false;
 
@@ -172,37 +184,9 @@ AFRAME.registerComponent("ui-system", {
   },
 
   createInfo: function () {
-    const customsButtons = this.el.getAttribute("info-buttons");
-    let buttonsArr = customsButtons.split(";");
-    buttonsArr = buttonsArr.map(button => {
-      if(button.length) {
-        button = button.split(",");
-        for(let i=0; i<button.length; i++) {
-          button[i] = button[i].trim();
-        }
-        const listItem = document.createElement("li");
-        listItem.classList.add("info-item");
-        if(button[1] && button[1] !== "null"){
-          listItem.classList.add(button[1])
-        }
-        if(button[2]) {
-          const link = document.createElement("a");
-          link.href = button[2];
-          link.innerText = button[0];
-          link.classList.add("info-link");
-          listItem.appendChild(link);
-        } else {
-          const btn = document.createElement("button");
-          btn.innerText = button[0];
-          listItem.appendChild(btn);
-        }
-        return listItem;
-      }
-      return null;
-    })
-
     this.infoBtn = document.createElement("button");
     this.infoBtn.setAttribute("class", "ui-btn info");
+    this.infoBtn.style.backgroundImage = "url(/assets/Artfx_ICON_Square.png)";
 
     this.infoBtnGroup.appendChild(this.infoBtn);
 
@@ -216,9 +200,39 @@ AFRAME.registerComponent("ui-system", {
     this.infoList = document.createElement("ul");
     this.infoList.setAttribute("class", "info-list");
 
-    for(let item of buttonsArr) {
-      if(item !== null) {
-        this.infoList.appendChild(item);
+    const customButtons = this.el.getAttribute("info-buttons");
+    if (customButtons) {
+      let buttonsArr = customButtons.split(";");
+      buttonsArr = buttonsArr.map((button) => {
+        if (button.length) {
+          button = button.split(",");
+          for (let i = 0; i < button.length; i++) {
+            button[i] = button[i].trim();
+          }
+          const listItem = document.createElement("li");
+          listItem.classList.add("info-item");
+          if (button[1] && button[1] !== "null") {
+            listItem.classList.add(button[1]);
+          }
+          if (button[2]) {
+            const link = document.createElement("a");
+            link.href = button[2];
+            link.innerText = button[0];
+            link.classList.add("info-link");
+            listItem.appendChild(link);
+          } else {
+            const btn = document.createElement("button");
+            btn.innerText = button[0];
+            listItem.appendChild(btn);
+          }
+          return listItem;
+        }
+        return null;
+      });
+      for (let item of buttonsArr) {
+        if (item !== null) {
+          this.infoList.appendChild(item);
+        }
       }
     }
 
@@ -226,6 +240,7 @@ AFRAME.registerComponent("ui-system", {
     this.tosLink = document.createElement("a");
     this.tosItem.setAttribute("class", "info-item");
     this.tosLink.setAttribute("href", "https://artfx.info/tos.html");
+    this.tosLink.setAttribute("class", "item-link");
     this.tosLink.innerText = "Terms of Service";
     this.tosItem.appendChild(this.tosLink);
 
@@ -233,6 +248,7 @@ AFRAME.registerComponent("ui-system", {
     this.privacyLink = document.createElement("a");
     this.privacyItem.setAttribute("class", "info-item");
     this.privacyLink.setAttribute("href", "https://www.termsfeed.com/live/dee69382-bfa3-403e-b74f-d0b681915514");
+    this.privacyLink.setAttribute("class", "item-link");
     this.privacyLink.innerText = "Privacy";
     this.privacyItem.appendChild(this.privacyLink);
 

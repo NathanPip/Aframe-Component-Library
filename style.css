@@ -5,10 +5,6 @@ body {
     box-sizing: border-box;
 }
 
-a {
-  all: unset;
-}
-
 #loading-div {
   width: 80px; 
   height:100px; 
@@ -57,17 +53,25 @@ a {
 .ui-btn {
   padding: 1em;
   border-radius: 50%;
+  width: 4em;
+  height: 4em;
   border: 2px solid;
-  background: transparent;
+  background-repeat: no-repeat;
+  background-size: 2.75em;
+  background-position: center;
   border-color: rgba(63, 89, 208, 0.7);
 }
-.ui-btn img {
-  width: 2em;
-  height: 2em;
+
+.close-btn {
+  position: absolute;
+  right: 0;
+  margin: 1em;
+  font-size: 1.25em;
+  padding: .25em .5em;
+  border-color: rgba(63, 89, 208, 0.7);
+  border-radius: 25%;
 }
-.ui-btn:hover {
-  cursor: pointer;
-}
+
 .util-btn-group {
   color: black;
   flex: 1;
@@ -87,12 +91,10 @@ a {
   padding-inline: 1em;
 }
 
-.ui-btn.close {
-  position: absolute;
-  right: 0;
-  margin: 1em;
-  font-size: 1em;
-  padding: .25em .5em;
+.settings-title {
+  text-align: center;
+  font-size: 3em;
+  font-weight: 500;
 }
 
 .box {
@@ -110,7 +112,7 @@ a {
   padding: 1.5em 0;
   left: 0;
   margin-left: 1em;
-  margin-bottom: 1em;
+  margin-bottom: 1rem;
   font-size: 1.2em;
 }
 
@@ -137,11 +139,12 @@ a {
   outline: none;
   padding: 0;
   font: inherit;
+  color: black;
 }
 
-.info-item:not(:last-child) {
+.item-link {
+  color: black;
 }
-
 
 .settings-box {
   top: 0;
@@ -154,7 +157,7 @@ a {
 .chat-box {
   bottom: 5em;
   right: 0;
-  margin-bottom: 1em;
+  margin-bottom: 1rem;
   height: 30em;
   max-height: 25em;
   width: 25em;
@@ -190,6 +193,10 @@ a {
   padding-inline: 1em;
 }
 
+.mic.off {
+  background-color: red;
+}
+
 .loading-screen {
   position: fixed;
   width: 100%;
@@ -217,6 +224,10 @@ a {
 p {
   margin-top: .4em;
   margin-bottom: 0;
+}
+
+a {
+  all: unset;
 }
 
 button:hover {
