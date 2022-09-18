@@ -217,6 +217,7 @@ AFRAME.registerComponent("ui-system", {
           if (button[2]) {
             const link = document.createElement("a");
             link.href = button[2];
+            link.target = "_blank";
             link.innerText = button[0];
             link.classList.add("info-link");
             listItem.appendChild(link);
@@ -241,14 +242,19 @@ AFRAME.registerComponent("ui-system", {
     this.tosItem.setAttribute("class", "info-item");
     this.tosLink.setAttribute("href", "https://artfx.info/tos.html");
     this.tosLink.setAttribute("class", "item-link");
+    this.tosLink.setAttribute("target", "_blank");
     this.tosLink.innerText = "Terms of Service";
     this.tosItem.appendChild(this.tosLink);
 
     this.privacyItem = document.createElement("li");
     this.privacyLink = document.createElement("a");
     this.privacyItem.setAttribute("class", "info-item");
-    this.privacyLink.setAttribute("href", "https://www.termsfeed.com/live/dee69382-bfa3-403e-b74f-d0b681915514");
+    this.privacyLink.setAttribute(
+      "href",
+      "https://www.termsfeed.com/live/dee69382-bfa3-403e-b74f-d0b681915514"
+    );
     this.privacyLink.setAttribute("class", "item-link");
+    this.privacyLink.setAttribute("target", "_blank");
     this.privacyLink.innerText = "Privacy";
     this.privacyItem.appendChild(this.privacyLink);
 
