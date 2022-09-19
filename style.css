@@ -3,15 +3,11 @@ body {
     background-color: black;
     color: black;
     box-sizing: border-box;
+    font-size: 1rem;
 }
 
-#loading-div {
-  width: 80px; 
-  height:100px; 
-  position: absolute; 
-  top: 50%; 
-  left: 50%; 
-  margin: -25px 0 0 -25px;
+input {
+  font-size: 1em;
 }
 
 #streaming-payments-container {
@@ -100,7 +96,6 @@ body {
 .box {
   display: none;
   flex-direction: column;
-  justify-content: space-between;
   position: absolute;
   margin-inline: 1em;
   background-color: white;
@@ -154,6 +149,46 @@ body {
   width: 35em;
 }
 
+.settings-list {
+  display: flex;
+  flex-direction: column;
+  margin-inline: 1em;
+  border-top: 1px solid rgba(63, 89, 208, 0.7);
+  padding: .25em;
+}
+
+.settings-item {
+  display: flex;
+  align-items: center;
+  font-size: 1.25em;
+  min-height: 2em;
+}
+
+.settings-item-title {
+  font-size: 1.5em;
+  margin-right: .5em;
+  margin-bottom: .2em;
+}
+
+.settings-input {
+  margin: 0;
+}
+
+.settings-input.check {
+  height: 1em;
+  width: 1em;
+  border-color: 1px solid rgba(63, 89, 208, 0.7);
+  border-radius: 25%;
+}
+
+.settings-input.check:after {
+  display: none;
+}
+
+.settings-input.check:checked {
+  background-color: rgba(63, 89, 208, 0.7);
+}
+
 .chat-box {
   bottom: 5em;
   right: 0;
@@ -161,6 +196,7 @@ body {
   height: 30em;
   max-height: 25em;
   width: 25em;
+  justify-content: space-between;
 }
 .chat-box .input-group {
   padding: .5em 1em;
@@ -224,6 +260,10 @@ body {
 p {
   margin-top: .4em;
   margin-bottom: 0;
+}
+
+button {
+  background-color: transparent;
 }
 
 a {

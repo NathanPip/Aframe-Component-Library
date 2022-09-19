@@ -1,3 +1,14 @@
+const createSettingsItem = (settingsName, element) => {
+  const settingsItem = document.createElement('div');
+  settingsItem.setAttribute("class", `settings-item ${settingsName}-item`);
+  const itemTitle = document.createElement('label');
+  itemTitle.setAttribute("class", `settings-item-title ${settingsName}-item-title}`)
+  itemTitle.innerText = settingsName;
+  settingsItem.appendChild(itemTitle);
+  settingsItem.appendChild(element);
+  return settingsItem;
+}
+
 AFRAME.registerComponent("ui-system", {
   schema: {
     enabled: { default: true },
@@ -168,6 +179,10 @@ AFRAME.registerComponent("ui-system", {
     this.settingsTitle.innerText = "Preferences";
     this.settingsBox.appendChild(this.settingsTitle);
 
+    this.settingsList = document.createElement("div");
+    this.settingsList.setAttribute("class", "settings-list");
+    this.settingsBox.appendChild(this.settingsList);
+
     this.settingsOpen = false;
 
     this.supportBtnGroup.appendChild(this.settingsButton);
@@ -181,6 +196,23 @@ AFRAME.registerComponent("ui-system", {
       this.hideElement(this.settingsBox, this.settingsOpen);
       this.settingsOpen = !this.settingsOpen;
     });
+    this.settingsSetup();
+  },
+
+  settingsSetup: function() {
+    let settings = this.el.getAttribute("settings");
+    if(!settings) {return}
+    settings = settings.split(",");
+    for(let item of settings) {
+      item = item.trim();
+    }
+    if(settings.includes("mute")){
+      let muteToggle = document.createElement("input");
+      muteToggle.setAttribute("class","settings-input check settings-mute-input")
+      muteToggle.type = "checkbox";
+      const muteItem = createSettingsItem("mute", muteToggle);
+      this.settingsList.appendChild(muteItem);
+    }
   },
 
   createInfo: function () {
