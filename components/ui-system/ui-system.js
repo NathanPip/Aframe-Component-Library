@@ -1,13 +1,21 @@
 const createSettingsItem = (settingsName, element) => {
-  const settingsItem = document.createElement('div');
+  const settingsItem = document.createElement("div");
   settingsItem.setAttribute("class", `settings-item ${settingsName}-item`);
-  const itemTitle = document.createElement('label');
-  itemTitle.setAttribute("class", `settings-item-title ${settingsName}-item-title}`)
+  const itemTitle = document.createElement("label");
+  itemTitle.setAttribute("class", `settings-item-title ${settingsName}-item-title}`);
   itemTitle.innerText = settingsName;
   settingsItem.appendChild(itemTitle);
   settingsItem.appendChild(element);
   return settingsItem;
-}
+};
+
+const hideElement = (element, isOpen) => {
+  if (isOpen) {
+    element.style = "display: none;";
+  } else {
+    element.style = "display: flex;";
+  }
+};
 
 AFRAME.registerComponent("ui-system", {
   schema: {
@@ -36,6 +44,8 @@ AFRAME.registerComponent("ui-system", {
       console.log("scene is not networked");
       this.data.isNetworked = false;
     }
+
+    console.log(this.el.sceneEl.camera);
 
     this.uiContainer = document.createElement("div");
     this.uiContainer.setAttribute("class", "ui-container");
@@ -72,18 +82,6 @@ AFRAME.registerComponent("ui-system", {
 
     this.uiContainer.appendChild(this.uiBar);
     if (this.data.enabled) document.body.appendChild(this.uiContainer);
-  },
-
-  update: function () {
-    // Do something when component's data is updated.
-  },
-
-  remove: function () {
-    // Do something the component or its entity is detached.
-  },
-
-  tick: function (time, timeDelta) {
-    // Do something on every scene tick or frame.
   },
 
   createChat: function () {
@@ -126,11 +124,11 @@ AFRAME.registerComponent("ui-system", {
     this.uiContainer.appendChild(this.chatBox);
 
     this.chatButton.addEventListener("click", () => {
-      this.hideElement(this.chatBox, this.chatOpen);
+      hideElement(this.chatBox, this.chatOpen);
       this.chatOpen = !this.chatOpen;
     });
     this.chatClose.addEventListener("click", () => {
-      this.hideElement(this.chatBox, this.chatOpen);
+      hideElement(this.chatBox, this.chatOpen);
       this.chatOpen = !this.chatOpen;
     });
 
@@ -158,61 +156,6 @@ AFRAME.registerComponent("ui-system", {
     this.utilBtnGroup.appendChild(this.voiceBtn);
 
     this.voiceBtn.addEventListener("click", this.toggleVoice);
-  },
-
-  createSettings: function () {
-    this.settingsButton = document.createElement("button");
-    this.settingsButton.setAttribute("class", "ui-btn settings");
-    this.settingsButton.style.backgroundImage =
-      "url(/assets/settings-cogwheel-svgrepo-com.svg)";
-
-    this.settingsBox = document.createElement("div");
-    this.settingsBox.setAttribute("class", "box settings-box");
-
-    this.settingsClose = document.createElement("button");
-    this.settingsClose.setAttribute("class", "close-btn settings-close");
-    this.settingsClose.innerText = "X";
-    this.settingsBox.appendChild(this.settingsClose);
-
-    this.settingsTitle = document.createElement("h2");
-    this.settingsTitle.setAttribute("class", "settings-title");
-    this.settingsTitle.innerText = "Preferences";
-    this.settingsBox.appendChild(this.settingsTitle);
-
-    this.settingsList = document.createElement("div");
-    this.settingsList.setAttribute("class", "settings-list");
-    this.settingsBox.appendChild(this.settingsList);
-
-    this.settingsOpen = false;
-
-    this.supportBtnGroup.appendChild(this.settingsButton);
-    this.uiContainer.appendChild(this.settingsBox);
-
-    this.settingsButton.addEventListener("click", () => {
-      this.hideElement(this.settingsBox, this.settingsOpen);
-      this.settingsOpen = !this.settingsOpen;
-    });
-    this.settingsClose.addEventListener("click", () => {
-      this.hideElement(this.settingsBox, this.settingsOpen);
-      this.settingsOpen = !this.settingsOpen;
-    });
-    this.settingsSetup();
-  },
-
-  settingsSetup: function() {
-    let settings = this.el.getAttribute("settings");
-    if(!settings) {return}
-    settings = settings.split(",");
-    for(let item of settings) {
-      item = item.trim();
-    }
-    if(settings.includes("mute")){
-      let muteToggle = document.createElement("input");
-      muteToggle.setAttribute("class","settings-input check settings-mute-input")
-      muteToggle.type = "checkbox";
-      const muteItem = createSettingsItem("mute", muteToggle);
-      this.settingsList.appendChild(muteItem);
-    }
   },
 
   createInfo: function () {
@@ -281,10 +224,7 @@ AFRAME.registerComponent("ui-system", {
     this.privacyItem = document.createElement("li");
     this.privacyLink = document.createElement("a");
     this.privacyItem.setAttribute("class", "info-item");
-    this.privacyLink.setAttribute(
-      "href",
-      "https://www.termsfeed.com/live/dee69382-bfa3-403e-b74f-d0b681915514"
-    );
+    this.privacyLink.setAttribute("href", "https://www.termsfeed.com/live/dee69382-bfa3-403e-b74f-d0b681915514");
     this.privacyLink.setAttribute("class", "item-link");
     this.privacyLink.setAttribute("target", "_blank");
     this.privacyLink.innerText = "Privacy";
@@ -295,16 +235,101 @@ AFRAME.registerComponent("ui-system", {
     this.infoBox.appendChild(this.infoList);
 
     this.infoBtn.addEventListener("click", () => {
-      this.hideElement(this.infoBox, this.infoOpen);
+      hideElement(this.infoBox, this.infoOpen);
       this.infoOpen = !this.infoOpen;
     });
   },
 
-  hideElement: function (element, isOpen) {
-    if (isOpen) {
-      element.style = "display: none;";
+  createSettings: function () {
+    this.settingsButton = document.createElement("button");
+    this.settingsButton.setAttribute("class", "ui-btn settings");
+    this.settingsButton.style.backgroundImage = "url(/assets/settings-cogwheel-svgrepo-com.svg)";
+
+    this.settingsBox = document.createElement("div");
+    this.settingsBox.setAttribute("class", "box settings-box");
+
+    this.settingsClose = document.createElement("button");
+    this.settingsClose.setAttribute("class", "close-btn settings-close");
+    this.settingsClose.innerText = "X";
+    this.settingsBox.appendChild(this.settingsClose);
+
+    this.settingsTitle = document.createElement("h2");
+    this.settingsTitle.setAttribute("class", "settings-title");
+    this.settingsTitle.innerText = "Preferences";
+    this.settingsBox.appendChild(this.settingsTitle);
+
+    this.settingsList = document.createElement("div");
+    this.settingsList.setAttribute("class", "settings-list");
+    this.settingsBox.appendChild(this.settingsList);
+
+    this.settingsOpen = false;
+
+    this.supportBtnGroup.appendChild(this.settingsButton);
+    this.uiContainer.appendChild(this.settingsBox);
+
+    this.settingsButton.addEventListener("click", () => {
+      hideElement(this.settingsBox, this.settingsOpen);
+      this.settingsOpen = !this.settingsOpen;
+    });
+    this.settingsClose.addEventListener("click", () => {
+      hideElement(this.settingsBox, this.settingsOpen);
+      this.settingsOpen = !this.settingsOpen;
+    });
+    this.settingsSetup();
+  },
+
+  settingsSetup: function () {
+    let settings = this.el.getAttribute("settings");
+    if (!settings) {
+      return;
+    }
+    this.el.settings = {};
+    settings = settings.split(",");
+    for (let item of settings) {
+      item = item.trim();
+    }
+    if (settings.includes("mute")) {
+      this.el.settings.mute = false;
+      this.muteToggle = document.createElement("input");
+      this.muteToggle.setAttribute("class", "settings-input check settings-mute-input");
+      this.muteToggle.type = "checkbox";
+      const muteItem = createSettingsItem("mute", this.muteToggle);
+      let toggleHandler = () => {this.el.settings.mute = !this.el.settings.mute}
+      toggleHandler = toggleHandler.bind(this);
+      this.settingsList.appendChild(muteItem);
+      this.muteToggle.addEventListener("click", toggleHandler);
+    }
+    this.checkSettingsChange();
+  },
+
+  checkSettingsChange: function () {
+    if (!this.el.settings) return;
+    let oldSettings = {...this.el.settings};
+    setInterval(() => {
+      const settings = {...this.el.settings};
+      if (settings.mute !== oldSettings.mute) {
+        this.toggleSceneMute();
+      }
+      oldSettings = {...settings};
+    }, 25);
+  },
+
+  toggleSceneMute: function () {
+    if (this.el.settings.mute === true) {
+      this.muteToggle.checked = true;
+      this.setSceneVolume(0);
     } else {
-      element.style = "display: flex;";
+      this.muteToggle.checked = false;
+      this.setSceneVolume(1);
+    }
+  },
+
+  setSceneVolume: function (volume) {
+    let audios = document.querySelectorAll("audio");
+    let videos = document.querySelectorAll("video");
+    let sounds = [...audios, ...videos];
+    for (let sound of sounds) {
+      sound.volume = volume;
     }
   },
 
@@ -340,7 +365,7 @@ AFRAME.registerComponent("ui-system", {
   },
 
   bindHandlers: function () {
-    this.hideElement = this.hideElement.bind(this);
+    this.toggleSceneMute = this.toggleSceneMute.bind(this);
     this.toggleVoice = this.toggleVoice.bind(this);
     this.messageSubscribe = this.messageSubscribe.bind(this);
     this.sendMessage = this.sendMessage.bind(this);
