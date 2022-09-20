@@ -6,8 +6,12 @@ function delay(milisec) {
   });
 }
 
+function hexStringToHexInt(str) {
+  return Number(`0x${str.substring(1)}`);
+}
+
 class LoadScreen {
-  constructor(mainScene, enabled, clickToStart) {
+  constructor(mainScene, enabled, clickToStart, bgColor, backlightColor, forelightColor, ambientColor) {
     this.mainScene = mainScene;
     this.enabled = enabled ? enabled : true;
     this.clickToStart = clickToStart ? clickToStart : true;
@@ -15,6 +19,10 @@ class LoadScreen {
     this.camera = new THREE.PerspectiveCamera(80, window.innerWidth / window.innerHeight, 0.0005, 10000);
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
     this.clock = new THREE.Clock();
+    this.bgColor = bgColor ? hexStringToHexInt(bgColor) : 0x000000;
+    this.backlightColor = backlightColor ? hexStringToHexInt(backlightColor) : 0x0000ff;
+    this.forelightColor = forelightColor ? hexStringToHexInt(forelightColor) : 0xffffff;
+    this.ambientColor = ambientColor ? hexStringToHexInt(ambientColor) : 0xffffff;
     this.titleCreated;
     this.init();
   }
@@ -22,6 +30,7 @@ class LoadScreen {
   init() {
     this.loaded = this.loaded.bind(this);
     this.remove = this.remove.bind(this);
+    this.resize = this.resize.bind(this);
 
     this.mainScene.style.display = "none";
 
@@ -36,20 +45,20 @@ class LoadScreen {
     document.body.appendChild(this.renderer.domElement);
 
     this.loaderScene.add(this.camera);
-    this.loaderScene.background = new THREE.Color(0x000000);
+    this.loaderScene.background = new THREE.Color(this.bgColor);
 
-    const ambient = new THREE.AmbientLight(0xffffff, 0.5);
+    const ambient = new THREE.AmbientLight(this.ambientColor, 0.5);
     this.loaderScene.add(ambient);
 
-    const pointLight = new THREE.PointLight(0xfffff, 5, 100);
+    const pointLight = new THREE.PointLight(this.forelightColor, 5, 100);
     pointLight.position.set(-20, 10, -50);
     this.loaderScene.add(pointLight);
 
-    const pointLight2 = new THREE.PointLight(0x0000ff, 5, 100);
+    const pointLight2 = new THREE.PointLight(this.backlightColor, 5, 100);
     pointLight2.position.set(0, 10, -70);
     this.loaderScene.add(pointLight2);
 
-    const pointLight1 = new THREE.PointLight(0xffffff, 5, 100);
+    const pointLight1 = new THREE.PointLight(this.forelightColor, 5, 100);
     pointLight1.position.set(20, 10, -50);
     this.loaderScene.add(pointLight1);
 
@@ -62,7 +71,7 @@ class LoadScreen {
 
     this.createTitle();
     this.render();
-
+    window.addEventListener("resize", this.resize);
     window.addEventListener("scene-loaded", this.loaded);
   }
 
@@ -85,15 +94,15 @@ class LoadScreen {
       removeEventListener("click", this.remove);
       removeEventListener("keydown", this.remove);
       this.titleBackground.classList.add("exit");
-      setTimeout(() => this.titleBackground.remove(), 1500)
+      setTimeout(() => this.titleBackground.remove(), 1500);
     }
-    const ui = document.querySelector("[ui-system]")
-    if(ui) {
+    const ui = document.querySelector("[ui-system]");
+    if (ui) {
       ui.components["ui-system"].initialize();
     }
     const mainScene = document.querySelector("a-scene");
     mainScene.style = "display: block;";
-    console.log("removed")
+    console.log("removed");
     const sceneEl = this.renderer.domElement;
     sceneEl.remove();
   }
@@ -124,20 +133,38 @@ class LoadScreen {
 
 AFRAME.registerSystem("loading-manager", {
   schema: {
-    clickToStart: { default: true },
     enabled: { default: true },
+    loadScreenEnabled: { default: true },
+    clickToStart: { default: true },
     loadSelf: { default: true },
+    bgColor: { default: null },
+    ambientColor: { default: null },
+    backlightColor: { default: null },
+    forelightColor: { default: null },
   },
 
   init: function () {
+    if (!this.data.enabled) {
+      return;
+    }
     this.loaded = this.loaded.bind(this);
-    this.Load = new LoadScreen(this.el, this.data.enabled, this.data.clickToStart);
+    this.Load = new LoadScreen(
+      this.el,
+      this.data.loadScreenEnabled,
+      this.data.clickToStart,
+      this.data.bgColor,
+      this.data.backlightColor,
+      this.data.forelightColor,
+      this.data.ambientColor
+    );
     this.el.addEventListener("loaded", this.loaded);
   },
 
-  loaded: function() {
+  loaded: function () {
     console.log("loaded");
-    setTimeout(()=>{this.loadStart()}, 10);
+    setTimeout(() => {
+      this.loadStart();
+    }, 10);
   },
 
   loadStart: async function () {
@@ -155,7 +182,8 @@ AFRAME.registerSystem("loading-manager", {
     this.loadedEvent = new Event("scene-loaded");
     if (this.data.loadSelf) {
       for (let comp in this.el.components) {
-        if (this.el.components[comp].preLoad && this.el.components[comp].attrName !== "loading-manager") this.el.components[comp].preLoad();
+        if (this.el.components[comp].preLoad && this.el.components[comp].attrName !== "loading-manager")
+          this.el.components[comp].preLoad();
       }
     }
     callElementPreLoadFunctions(this.el);
@@ -164,7 +192,8 @@ AFRAME.registerSystem("loading-manager", {
   postLoad: function () {
     if (this.data.loadSelf) {
       for (let comp in this.el.components) {
-        if (this.el.components[comp].postLoad && this.el.components[comp].attrName !== "loading-manager") this.el.components[comp].postLoad();
+        if (this.el.components[comp].postLoad && this.el.components[comp].attrName !== "loading-manager")
+          this.el.components[comp].postLoad();
       }
     }
     callElementPostLoadFunctions(this.el);
