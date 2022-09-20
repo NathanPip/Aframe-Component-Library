@@ -1,3 +1,4 @@
+// returns a new settings item elements with a label and element attatched
 const createSettingsItem = (settingsName, element) => {
   const settingsItem = document.createElement("div");
   settingsItem.setAttribute("class", `settings-item ${settingsName}-item`);
@@ -9,6 +10,7 @@ const createSettingsItem = (settingsName, element) => {
   return settingsItem;
 };
 
+//hides dom elements
 const hideElement = (element, isOpen) => {
   if (isOpen) {
     element.style = "display: none;";
@@ -29,6 +31,8 @@ AFRAME.registerComponent("ui-system", {
     isNetworked: { default: false },
   },
 
+  //runs when component is intitialized
+  //if there is no loading screen run initialize() after timeout
   init: function () {
     this.initialize = this.initialize.bind(this);
     if (this.data.waitForLoad === false) {
@@ -38,14 +42,15 @@ AFRAME.registerComponent("ui-system", {
     }
   },
 
+  //initializes UI system and settings
   initialize: function () {
+    /////////////////////////////////// VARIABLES
+
     this.bindHandlers();
     if (!window.NAF) {
       console.log("scene is not networked");
       this.data.isNetworked = false;
     }
-
-    console.log(this.el.sceneEl.camera);
 
     this.uiContainer = document.createElement("div");
     this.uiContainer.setAttribute("class", "ui-container");
@@ -84,9 +89,14 @@ AFRAME.registerComponent("ui-system", {
     if (this.data.enabled) document.body.appendChild(this.uiContainer);
   },
 
+  ////////////////////////// START OF UI COMPONENT CREATION //
+
+  // creates the chat component if the scene is networked
   createChat: function () {
     this.chatButton = document.createElement("button");
     this.chatButton.setAttribute("class", "ui-btn chat");
+
+    // hard coded icon
     this.chatButton.style.backgroundImage = "url(/assets/chat-svg.svg)";
 
     this.utilBtnGroup.appendChild(this.chatButton);
@@ -118,6 +128,7 @@ AFRAME.registerComponent("ui-system", {
     inputGroup.appendChild(this.chatInput);
     inputGroup.appendChild(sendBtn);
 
+    // whether chat is open or closed
     this.chatOpen = false;
 
     this.utilBtnGroup.appendChild(this.chatButton);
@@ -283,34 +294,71 @@ AFRAME.registerComponent("ui-system", {
     if (!settings) {
       return;
     }
-    this.el.settings = {};
+
     settings = settings.split(",");
-    for (let item of settings) {
-      item = item.trim();
+
+    for (let i = 0; i < settings.length; i++) {
+      settings[i] = settings[i].trim();
     }
-    if (settings.includes("mute")) {
-      this.el.settings.mute = false;
+
+    this.el.settings = {
+      mute: false,
+      volume: 0.8,
+    };
+
+    if (settings.includes("sound")) {
       this.muteToggle = document.createElement("input");
       this.muteToggle.setAttribute("class", "settings-input check settings-mute-input");
       this.muteToggle.type = "checkbox";
       const muteItem = createSettingsItem("mute", this.muteToggle);
-      let toggleHandler = () => {this.el.settings.mute = !this.el.settings.mute}
+      let toggleHandler = () => {
+        this.el.settings.mute = !this.el.settings.mute;
+      };
       toggleHandler = toggleHandler.bind(this);
       this.settingsList.appendChild(muteItem);
       this.muteToggle.addEventListener("click", toggleHandler);
     }
+
+    if (settings.includes("sound")) {
+      this.volumeSlider = document.createElement("input");
+      this.volumeSlider.setAttribute("class", "settings-input slider settings-volume-input");
+      this.volumeSlider.type = "range";
+      this.volumeSlider.value = 80;
+      const volumeItem = createSettingsItem("volume", this.volumeSlider);
+      let toggleHandler = () => {
+        this.el.settings.volume = this.volumeSlider.value / 100;
+      };
+      toggleHandler = toggleHandler.bind(this);
+      this.settingsList.appendChild(volumeItem);
+      this.volumeSlider.addEventListener("input", toggleHandler);
+    }
+
     this.checkSettingsChange();
   },
 
   checkSettingsChange: function () {
     if (!this.el.settings) return;
-    let oldSettings = {...this.el.settings};
+    //initialize settings
+    this.setSceneVolume(this.el.settings.volume);
+
+    //check for settings changes
+    let oldSettings = { ...this.el.settings };
     setInterval(() => {
-      const settings = {...this.el.settings};
+      //copy settings into new object
+      const settings = { ...this.el.settings };
+
+      //Compare settings values between old settings and new settings
+      //mute seperated from volume logic as to not disable mute without adjusting the setting value
       if (settings.mute !== oldSettings.mute) {
         this.toggleSceneMute();
       }
-      oldSettings = {...settings};
+      //volume logic only runs if mute is disabled
+      if (!settings.mute) {
+        if (settings.volume !== oldSettings.volume) {
+          this.setSceneVolume(settings.volume);
+        }
+      }
+      oldSettings = { ...settings };
     }, 25);
   },
 
@@ -320,13 +368,17 @@ AFRAME.registerComponent("ui-system", {
       this.setSceneVolume(0);
     } else {
       this.muteToggle.checked = false;
-      this.setSceneVolume(1);
+      this.setSceneVolume(this.el.settings.volume);
     }
   },
 
   setSceneVolume: function (volume) {
     let audios = document.querySelectorAll("audio");
     let videos = document.querySelectorAll("video");
+    const audioListener = this.el.sceneEl.camera.children[0];
+    if (audioListener) {
+      audioListener.setMasterVolume(volume);
+    }
     let sounds = [...audios, ...videos];
     for (let sound of sounds) {
       sound.volume = volume;
