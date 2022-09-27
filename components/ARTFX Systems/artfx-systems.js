@@ -56,7 +56,7 @@ class LoadScreen {
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.renderer.xr.enabled = true;
     this.renderer.domElement.classList.add("loading-scene");
-    this.renderer.domElement.style.zIndex = -1;
+    this.renderer.domElement.style.zIndex = 1;
     this.renderer.domElement.style.position = "fixed";
     this.renderer.domElement.style.top = 0;
     this.renderer.domElement.style.left = 0;
@@ -171,15 +171,16 @@ AFRAME.registerSystem("loading-manager", {
       return;
     }
     this.loaded = this.loaded.bind(this);
-    this.Load = new LoadScreen(
-      this.el,
-      this.data.loadScreenEnabled,
-      this.data.clickToStart,
-      this.data.bgColor,
-      this.data.backlightColor,
-      this.data.forelightColor,
-      this.data.ambientColor
-    );
+    if(this.data.loadScreenEnabled)
+      this.Load = new LoadScreen(
+        this.el,
+        this.data.loadScreenEnabled,
+        this.data.clickToStart,
+        this.data.bgColor,
+        this.data.backlightColor,
+        this.data.forelightColor,
+        this.data.ambientColor
+      );
     this.el.addEventListener("loaded", this.loaded);
   },
 
@@ -195,9 +196,15 @@ AFRAME.registerSystem("loading-manager", {
     this.elPostLoadEvents = [];
     this.elLoadEvents = [];
     this.preLoad();
-    await callElementLoadFunctions(this.el);
-    await delay(2000);
+    try {
+      await callElementLoadFunctions(this.el);
+      await delay(2000);
+    } catch (err){
+      console.log("async load failed");
+      console.log(err);
+    }
     this.postLoad();
+    console.log("load emmitted");
     window.dispatchEvent(this.loadedEvent);
   },
 
@@ -252,14 +259,16 @@ const callElementPostLoadFunctions = function (element) {
   for (let el of elements) {
     if (el.children) callElementPostLoadFunctions(el);
     if (el.components) {
-      for (let comp in el.components) {
-        if (el.components[comp].postLoad) el.components[comp].postLoad();
+      for (let comp in el.components) {     
+        if (el.components[comp].postLoad) {el.components[comp].postLoad(); console.log(el.components[comp]);}
       }
     }
   }
 };
 
 // ----------------------------------------------------------------END OF lOAD SYSTEM ----------------------------------------------------------------
+
+// ---------------------------------------------------------------- THE VOID BETWEEN ----------------------------------------------------------------
 
 // ----------------------------------------------------------------START OF UI AND SETTINGS SYSTEM ----------------------------------------------------------------
 
@@ -274,6 +283,14 @@ const createSettingsItem = (settingsName, element) => {
   settingsItem.appendChild(element);
   return settingsItem;
 };
+
+class UISystem {
+    constructor() {
+    }
+    Init(){
+        
+    }
+}
 
 AFRAME.registerComponent("ui-system", {
   schema: {
@@ -300,12 +317,13 @@ AFRAME.registerComponent("ui-system", {
 
   //initializes UI system and settings
   initialize: function () {
-    /////////////////////////////////// VARIABLES
 
     this.bindHandlers();
     if (!window.NAF) {
       console.log("scene is not networked");
-      this.data.isNetworked = false;
+      this.isNetworked = false;
+    } else if (this.data.isNetworked) {
+      this.isNetworked = true;
     }
 
     this.uiContainer = document.createElement("div");
@@ -328,14 +346,21 @@ AFRAME.registerComponent("ui-system", {
     }
 
     this.createInfo();
-
-    if (this.data.isNetworked && this.data.voiceEnabled) {
-      this.createVoice();
+    if(this.isNetworked) {
+      if(NAF.connection.adapter.easyrtc){
+        this.adapter = NAF.connection.adapter.easyrtc;
+      } else {
+        console.log(NAF.connection);
+        this.adapter = NAF.connection.adapter;
+      }
+      if (this.data.voiceEnabled) {
+        this.createVoice();
+      }
+      if (this.data.chatEnabled) {
+        this.createChat();
+      }
     }
 
-    if (this.data.isNetworked && this.data.chatEnabled) {
-      this.createChat();
-    }
 
     this.uiBar.appendChild(this.infoBtnGroup);
     this.uiBar.appendChild(this.utilBtnGroup);
@@ -418,7 +443,7 @@ AFRAME.registerComponent("ui-system", {
     this.voiceBtn.setAttribute("class", "ui-btn mic on");
     this.voiceBtn.style.backgroundImage = "url(/assets/microphone-svg.svg)";
 
-    NAF.connection.adapter.easyrtc.enableMicrophone(true);
+    this.adapter.easyrtc.enableMicrophone(true);
 
     this.utilBtnGroup.appendChild(this.voiceBtn);
 
@@ -594,6 +619,7 @@ AFRAME.registerComponent("ui-system", {
 
   checkSettingsChange: function () {
     if (!this.el.settings) return;
+    const settingsEvent = new CustomEvent("settings-change");
     //initialize settings
     this.setSceneVolume(this.el.settings.volume);
 
@@ -602,7 +628,11 @@ AFRAME.registerComponent("ui-system", {
     setInterval(() => {
       //copy settings into new object
       const settings = { ...this.el.settings };
-
+      for(let key in settings) {
+        if(settings[key] !== oldSettings[key]) {
+          window.dispatchEvent(settingsEvent);
+        }
+      }
       //Compare settings values between old settings and new settings
       //mute seperated from volume logic as to not disable mute without adjusting the setting value
       if (settings.mute !== oldSettings.mute) {
@@ -647,11 +677,11 @@ AFRAME.registerComponent("ui-system", {
     if (isOn) {
       this.voiceBtn.classList.remove("on");
       this.voiceBtn.classList.add("off");
-      NAF.connection.adapter.easyrtc.enableMicrophone(false);
+      this.adapter.enableMicrophone(false);
     } else {
       this.voiceBtn.classList.remove("off");
       this.voiceBtn.classList.add("on");
-      NAF.connection.adapter.easyrtc.enableMicrophone(true);
+      this.adapter.enableMicrophone(true);
     }
   },
 
@@ -682,7 +712,9 @@ AFRAME.registerComponent("ui-system", {
 
 // called when Networked Aframe Connects to the server
 function onConnect() {
-  document.querySelector("a-scene").systems["ui-system"].initialize();
+  const uiSystem = document.querySelector("[ui-system]");
+  if(uiSystem)
+    uiSystem.components["ui-system"].initialize();
 }
 
 // ----------------------------------------------------------------END OF UI AND SETTINGS SYSTEM ----------------------------------------------------------------

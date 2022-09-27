@@ -1,3 +1,7 @@
+.ui-container {
+  z-index: 98;
+}
+
 .ui-container .bar {
     width: 100%;
     position: fixed;
@@ -212,6 +216,7 @@
     flex-direction: column;
     align-items: center;
     font-size: 2em;
+    z-index: 99;
   }
   
   .loading-screen.exit {
@@ -231,4 +236,8 @@
   
   .ui-btn:hover, .close-btn:hover {
     cursor: pointer;
+  }
+  @keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
   }
