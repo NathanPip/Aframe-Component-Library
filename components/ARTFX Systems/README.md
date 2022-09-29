@@ -33,7 +33,7 @@ programs `<head>` underneath any Aframe or Networked Aframe `<script>` tags. You
   </head>
 ```
 ## Loading Manager and Screen
-The loading screen and loading manager are meant to add on top of Aframe's built in loading system to add more functionality and customizeability.
+The loading screen and loading manager are meant to build on top of Aframe's built in loading system to add more functionality and customizability.
 
 ### Loading Manager
 The loading manager is an [Aframe System](https://aframe.io/docs/1.3.0/core/systems.html) which runs it's logic after the "loaded" event is fired by Aframe.
@@ -57,7 +57,8 @@ AFRAME.registerComponent('foo', {
 ### Loading Screen
 The loading screen functions as a seperate THREE.js scene which is layed overtop the main Aframe scene. Customizablity options are available through
 the loading manager.
-#### OPTIONS 
+
+### OPTIONS 
 | Parameter | Type     | Description                | Default Value |
 | :-------- | :------- | :------------------------- | :-------------|
 | `enabled` | `boolean` | enabled or disables loading manager and loading screen | `true` |
@@ -69,3 +70,59 @@ the loading manager.
 | `forelightColor` | `hexadecimal string` | the color of the forelights shining on the torus | `#ffffff` |
 | `backlightColor` | `hexadecimal string` | the color of the backlights shining on the torus | `#0000ff` |
 
+#### Changing OPTIONS
+To change options you must add the `loading-manager` attribute to the `<a-scene>` element and include the settings you wish to  change in the attribute
+value. Formatting is the same as defining schema in A-frame components: `option name: option value;`  
+EX: `loading-manger="bgColor: #ff0000;"`
+## UI and Settings System
+The UI and Settings System are a seamless set of systems that add easy to use, clean UI as well as built in audio and Networked Aframe settings
+that automatically update scene and site data.
+
+### UI System
+WIP. Will have full customizability for a custom navbar, custom classes, and custom ui boxes
+
+### Settings System
+When the System is initialized an object on element titled `settings` will appear with default values corresponding to different
+settings and preferences within the site and scene. When the values in this object are manipulated funtions are called which update
+data in the scene and site corresponding to whatever value has been changed. A custom event named `settings-changed` is also emitted
+with an object of the settings that have been changed and their new values attatched to the `details` of the event. Custom properties
+can be added to the settings object.
+
+### Usage
+To instantiate both the UI and the settings system you must first declare a custom HTML property `<artfx-systems>` and place it somewhere in the 
+document body or `a-scene` element. Attributes added to the `<artfx-systems>` change different properties of the UI and settings.  
+Ex:  
+```
+<artfx-systems 
+  settings="isNetworked: true; voiceEnabled: false;" 
+  preferences="sound" 
+  info-buttons="Controls, btn controls-btn;" 
+/>
+```
+
+### Attributes
+#### **wait-for-load**  
+`wait-for-load` is a `boolean` value that dictates whether the UI system will initialize and render before the 
+loading screen has been removed. Default value is `true`.  
+#### **settings**  
+Custom Settings are declared similarly to A-Frame component scheme properties. `settings="parameter: value;"`
+| Parameter | Type     | Description                | Default Value |
+| :-------- | :------- | :------------------------- | :-------------|
+| `enabled` | `boolean` | enables or disables the UI system. | `true` |
+| `settingsEnabled` | `boolean` | enables or disables scene and site settings system. | `true` |
+| `isNetworked` | `boolean` | whether or not the system includes Networked Aframe functionality. | `false` |
+| `chatEnabled` | `boolean` | enables or disables the chat system. **Requires isNetworked**| `true` |
+| `voiceEnabled` | `boolean` | enables or disables the voice chat system. **Requires isNetworked**| `true` |
+
+#### **preferences**
+Preferences are instantiated by setting a list of strings, each corresponding to a preference the user can adjust.  
+Ex: `preferences="sound,"`
+| Setting | Description
+| :-------- | :------- 
+| `sound` | volume and mute preferences.
+
+#### **info-buttons**
+Custom info buttons are instantiated by declaring two strings seperated by a comma for each custom button. The first string is the 
+text applied to the button element attatched to the ui. The second string is the name of the class/classes attatched to that element. 
+If multiple custom elements are being declared, each element declaration should be seperated by a comma.
+Ex: `info-buttons="Controls, btn control-info-btn; Contributors, btn contributor-info-btn;"`

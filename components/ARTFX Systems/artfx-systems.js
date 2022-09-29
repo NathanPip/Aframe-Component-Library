@@ -28,18 +28,37 @@ const hideElement = (element, isOpen) => {
 // Loading Screen Class
 // Creates a new THREE js scene for loading which is displayed over top the AFRAME Scene
 class LoadScreen {
-  constructor(mainScene, enabled, clickToStart, bgColor, backlightColor, forelightColor, ambientColor) {
+  constructor(
+    mainScene,
+    enabled,
+    clickToStart,
+    bgColor,
+    backlightColor,
+    forelightColor,
+    ambientColor
+  ) {
     this.mainScene = mainScene;
     this.enabled = enabled ? enabled : true;
     this.clickToStart = clickToStart ? clickToStart : true;
     this.loaderScene = new THREE.Scene();
-    this.camera = new THREE.PerspectiveCamera(80, window.innerWidth / window.innerHeight, 0.0005, 10000);
+    this.camera = new THREE.PerspectiveCamera(
+      80,
+      window.innerWidth / window.innerHeight,
+      0.0005,
+      10000
+    );
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
     this.clock = new THREE.Clock();
     this.bgColor = bgColor ? hexStringToHexInt(bgColor) : 0x000000;
-    this.backlightColor = backlightColor ? hexStringToHexInt(backlightColor) : 0x0000ff;
-    this.forelightColor = forelightColor ? hexStringToHexInt(forelightColor) : 0xffffff;
-    this.ambientColor = ambientColor ? hexStringToHexInt(ambientColor) : 0xffffff;
+    this.backlightColor = backlightColor
+      ? hexStringToHexInt(backlightColor)
+      : 0x0000ff;
+    this.forelightColor = forelightColor
+      ? hexStringToHexInt(forelightColor)
+      : 0xffffff;
+    this.ambientColor = ambientColor
+      ? hexStringToHexInt(ambientColor)
+      : 0xffffff;
     this.titleCreated;
     this.init();
   }
@@ -81,7 +100,11 @@ class LoadScreen {
     this.loaderScene.add(pointLight1);
 
     const geometry = new THREE.TorusKnotGeometry(10, 3, 100, 16);
-    const material = new THREE.MeshStandardMaterial({ color: 0xfffff, roughness: 0.15, metalness: 1 });
+    const material = new THREE.MeshStandardMaterial({
+      color: 0xfffff,
+      roughness: 0.15,
+      metalness: 1,
+    });
     this.torusKnot = new THREE.Mesh(geometry, material);
 
     this.loaderScene.add(this.torusKnot);
@@ -117,15 +140,13 @@ class LoadScreen {
       this.titleBackground.classList.add("exit");
       setTimeout(() => this.titleBackground.remove(), 1500);
     }
-    const ui = document.querySelector("[ui-system]");
-    if (ui) {
-      ui.components["ui-system"].initialize();
-    }
     const mainScene = document.querySelector("a-scene");
     mainScene.style = "display: block;";
     console.log("removed");
     const sceneEl = this.renderer.domElement;
     sceneEl.remove();
+    const loadingRemoved = new CustomEvent("loadingRemoved");
+    window.dispatchEvent(loadingRemoved);
   }
 
   // called when scene has loaded
@@ -171,7 +192,7 @@ AFRAME.registerSystem("loading-manager", {
       return;
     }
     this.loaded = this.loaded.bind(this);
-    if(this.data.loadScreenEnabled)
+    if (this.data.loadScreenEnabled)
       this.Load = new LoadScreen(
         this.el,
         this.data.loadScreenEnabled,
@@ -199,7 +220,7 @@ AFRAME.registerSystem("loading-manager", {
     try {
       await callElementLoadFunctions(this.el);
       await delay(2000);
-    } catch (err){
+    } catch (err) {
       console.log("async load failed");
       console.log(err);
     }
@@ -212,7 +233,10 @@ AFRAME.registerSystem("loading-manager", {
     this.loadedEvent = new Event("scene-loaded");
     if (this.data.loadSelf) {
       for (let comp in this.el.components) {
-        if (this.el.components[comp].preLoad && this.el.components[comp].attrName !== "loading-manager")
+        if (
+          this.el.components[comp].preLoad &&
+          this.el.components[comp].attrName !== "loading-manager"
+        )
           this.el.components[comp].preLoad();
       }
     }
@@ -222,7 +246,10 @@ AFRAME.registerSystem("loading-manager", {
   postLoad: function () {
     if (this.data.loadSelf) {
       for (let comp in this.el.components) {
-        if (this.el.components[comp].postLoad && this.el.components[comp].attrName !== "loading-manager")
+        if (
+          this.el.components[comp].postLoad &&
+          this.el.components[comp].attrName !== "loading-manager"
+        )
           this.el.components[comp].postLoad();
       }
     }
@@ -259,8 +286,11 @@ const callElementPostLoadFunctions = function (element) {
   for (let el of elements) {
     if (el.children) callElementPostLoadFunctions(el);
     if (el.components) {
-      for (let comp in el.components) {     
-        if (el.components[comp].postLoad) {el.components[comp].postLoad(); console.log(el.components[comp]);}
+      for (let comp in el.components) {
+        if (el.components[comp].postLoad) {
+          el.components[comp].postLoad();
+          console.log(el.components[comp]);
+        }
       }
     }
   }
@@ -277,7 +307,10 @@ const createSettingsItem = (settingsName, element) => {
   const settingsItem = document.createElement("div");
   settingsItem.setAttribute("class", `settings-item ${settingsName}-item`);
   const itemTitle = document.createElement("label");
-  itemTitle.setAttribute("class", `settings-item-title ${settingsName}-item-title}`);
+  itemTitle.setAttribute(
+    "class",
+    `settings-item-title ${settingsName}-item-title}`
+  );
   itemTitle.innerText = settingsName;
   settingsItem.appendChild(itemTitle);
   settingsItem.appendChild(element);
@@ -285,44 +318,60 @@ const createSettingsItem = (settingsName, element) => {
 };
 
 class UISystem {
-    constructor() {
-    }
-    Init(){
-        
-    }
-}
+  constructor() {
+    // get element to initalize ui screen
+    this.el = document.querySelector("artfx-systems");
+    if (!this.el) return;
 
-AFRAME.registerComponent("ui-system", {
-  schema: {
-    enabled: { default: true },
-    waitForLoad: { default: true },
-    chatEnabled: { default: true },
-    voiceEnabled: { default: true },
-    settingsEnabled: { default: true },
-    infoIcon: { default: null },
-    settingsIcon: { default: null },
-    isNetworked: { default: false },
-  },
+    //Aframe scene element
+    this.sceneEl = document.querySelector("a-scene");
+    //object of settings for initialization of ui system
+    this.systemSettings = {};
+    //parsed object of preference settings the user can adjust
+    this.enabledPreferences = {};
 
-  //runs when component is intitialized
-  //if there is no loading screen run initialize() after timeout
-  init: function () {
-    this.initialize = this.initialize.bind(this);
-    if (this.data.waitForLoad === false) {
-      setTimeout(() => {
-        this.initialize();
-      }, 10);
+    //inital settings for the scene
+    this.el.settings = {
+      mute: false,
+      volume: 0.8,
+    };
+
+    //initialize function after load or wait after 10 millisecond timeout
+    this.Init = this.Init.bind(this);
+    const waitForLoad = this.el.getAttribute("wait-for-load");
+    if (waitForLoad !== "false") {
+      this.sceneEl = document.querySelector("a-scene");
+      addEventListener("loadingRemoved", this.Init);
+    } else {
+      setTimeout(this.Init, 10);
     }
-  },
+  }
+  Init() {
+    // intial system settings
+    const initalSettings = {
+      enabled: true,
+      settingsEnabled: true,
+      isNetworked: false,
+      chatEnabled: true,
+      voiceEnabled: true,
+    };
 
-  //initializes UI system and settings
-  initialize: function () {
+    //initiate system settings object
+    this.systemSettings = this.parseSystemSettings(
+      this.el.getAttribute("settings"),
+      initalSettings
+    );
+    this.enabledPreferences = this.parsePreferences(
+      this.el.getAttribute("preferences")
+    );
+
+    console.log(this.systemSettings.isNetworked);
 
     this.bindHandlers();
     if (!window.NAF) {
       console.log("scene is not networked");
       this.isNetworked = false;
-    } else if (this.data.isNetworked) {
+    } else if (this.systemSettings.isNetworked === true) {
       this.isNetworked = true;
     }
 
@@ -341,39 +390,39 @@ AFRAME.registerComponent("ui-system", {
     this.supportBtnGroup = document.createElement("div");
     this.supportBtnGroup.setAttribute("class", "support-btn-group");
 
-    if (this.data.settingsEnabled) {
+    if (this.enabledPreferences !== null) {
       this.createSettings();
+    } 
+    if(this.systemSettings.settingsEnabled){
+      this.checkSettingsChange();
     }
 
     this.createInfo();
-    if(this.isNetworked) {
-      if(NAF.connection.adapter.easyrtc){
+    if (this.isNetworked) {
+      if (NAF.connection.adapter.easyrtc) {
         this.adapter = NAF.connection.adapter.easyrtc;
       } else {
         console.log(NAF.connection);
         this.adapter = NAF.connection.adapter;
       }
-      if (this.data.voiceEnabled) {
+      if (this.systemSettings.voiceEnabled) {
         this.createVoice();
       }
-      if (this.data.chatEnabled) {
+      if (this.systemSettings.chatEnabled) {
         this.createChat();
       }
     }
-
 
     this.uiBar.appendChild(this.infoBtnGroup);
     this.uiBar.appendChild(this.utilBtnGroup);
     this.uiBar.appendChild(this.supportBtnGroup);
 
     this.uiContainer.appendChild(this.uiBar);
-    if (this.data.enabled) document.body.appendChild(this.uiContainer);
-  },
+    if (this.systemSettings !== false)
+      this.sceneEl.appendChild(this.uiContainer);
+  }
 
-  ////////////////////////// START OF UI COMPONENT CREATION //
-
-  // creates the chat component if the scene is networked
-  createChat: function () {
+  createChat() {
     this.chatButton = document.createElement("button");
     this.chatButton.setAttribute("class", "ui-btn chat");
 
@@ -436,21 +485,19 @@ AFRAME.registerComponent("ui-system", {
     sendBtn.addEventListener("click", this.sendMessage);
 
     NAF.connection.subscribeToDataChannel("chat", this.messageSubscribe);
-  },
-
-  createVoice: function () {
+  }
+  createVoice() {
     this.voiceBtn = document.createElement("button");
     this.voiceBtn.setAttribute("class", "ui-btn mic on");
     this.voiceBtn.style.backgroundImage = "url(/assets/microphone-svg.svg)";
 
-    this.adapter.easyrtc.enableMicrophone(true);
+    this.adapter.enableMicrophone(true);
 
     this.utilBtnGroup.appendChild(this.voiceBtn);
 
     this.voiceBtn.addEventListener("click", this.toggleVoice);
-  },
-
-  createInfo: function () {
+  }
+  createInfo() {
     this.infoBtn = document.createElement("button");
     this.infoBtn.setAttribute("class", "ui-btn info");
     this.infoBtn.style.backgroundImage = "url(/assets/Artfx_ICON_Square.png)";
@@ -516,7 +563,10 @@ AFRAME.registerComponent("ui-system", {
     this.privacyItem = document.createElement("li");
     this.privacyLink = document.createElement("a");
     this.privacyItem.setAttribute("class", "info-item");
-    this.privacyLink.setAttribute("href", "https://www.termsfeed.com/live/dee69382-bfa3-403e-b74f-d0b681915514");
+    this.privacyLink.setAttribute(
+      "href",
+      "https://www.termsfeed.com/live/dee69382-bfa3-403e-b74f-d0b681915514"
+    );
     this.privacyLink.setAttribute("class", "item-link");
     this.privacyLink.setAttribute("target", "_blank");
     this.privacyLink.innerText = "Privacy";
@@ -530,12 +580,12 @@ AFRAME.registerComponent("ui-system", {
       hideElement(this.infoBox, this.infoOpen);
       this.infoOpen = !this.infoOpen;
     });
-  },
-
-  createSettings: function () {
+  }
+  createSettings() {
     this.settingsButton = document.createElement("button");
     this.settingsButton.setAttribute("class", "ui-btn settings");
-    this.settingsButton.style.backgroundImage = "url(/assets/settings-cogwheel-svgrepo-com.svg)";
+    this.settingsButton.style.backgroundImage =
+      "url(/assets/settings-cogwheel-svgrepo-com.svg)";
 
     this.settingsBox = document.createElement("div");
     this.settingsBox.setAttribute("class", "box settings-box");
@@ -556,7 +606,7 @@ AFRAME.registerComponent("ui-system", {
 
     this.settingsOpen = false;
 
-    this.supportBtnGroup.appendChild(this.settingsButton);
+    this.uiContainer.appendChild(this.settingsButton);
     this.uiContainer.appendChild(this.settingsBox);
 
     this.settingsButton.addEventListener("click", () => {
@@ -567,57 +617,44 @@ AFRAME.registerComponent("ui-system", {
       hideElement(this.settingsBox, this.settingsOpen);
       this.settingsOpen = !this.settingsOpen;
     });
-    this.settingsSetup();
-  },
-
-  settingsSetup: function () {
-    let settings = this.el.getAttribute("settings");
-    if (!settings) {
-      return;
-    }
-
-    settings = settings.split(",");
-
-    for (let i = 0; i < settings.length; i++) {
-      settings[i] = settings[i].trim();
-    }
-
-    this.el.settings = {
-      mute: false,
-      volume: 0.8,
-    };
-
-    if (settings.includes("sound")) {
-      this.muteToggle = document.createElement("input");
-      this.muteToggle.setAttribute("class", "settings-input check settings-mute-input");
-      this.muteToggle.type = "checkbox";
-      const muteItem = createSettingsItem("mute", this.muteToggle);
-      let toggleHandler = () => {
-        this.el.settings.mute = !this.el.settings.mute;
-      };
-      toggleHandler = toggleHandler.bind(this);
-      this.settingsList.appendChild(muteItem);
-      this.muteToggle.addEventListener("click", toggleHandler);
-    }
-
-    if (settings.includes("sound")) {
+    this.setupSettings();
+  }
+  setupSettings() {
+    if (this.enabledPreferences.includes("sound")) {
+      // settings slider for volume slider
       this.volumeSlider = document.createElement("input");
-      this.volumeSlider.setAttribute("class", "settings-input slider settings-volume-input");
+      this.volumeSlider.setAttribute(
+        "class",
+        "settings-input slider settings-volume-input"
+      );
       this.volumeSlider.type = "range";
       this.volumeSlider.value = 80;
       const volumeItem = createSettingsItem("volume", this.volumeSlider);
-      let toggleHandler = () => {
+      let volumeToggleHandler = () => {
         this.el.settings.volume = this.volumeSlider.value / 100;
       };
-      toggleHandler = toggleHandler.bind(this);
+      volumeToggleHandler = volumeToggleHandler.bind(this);
       this.settingsList.appendChild(volumeItem);
-      this.volumeSlider.addEventListener("input", toggleHandler);
+      this.volumeSlider.addEventListener("input", volumeToggleHandler);
+
+      // settings item for Mute toggle
+      this.muteToggle = document.createElement("input");
+      this.muteToggle.setAttribute(
+        "class",
+        "settings-input check settings-mute-input"
+      );
+      this.muteToggle.type = "checkbox";
+      const muteItem = createSettingsItem("mute", this.muteToggle);
+      let muteToggleHandler = () => {
+        this.el.settings.mute = !this.el.settings.mute;
+      };
+      muteToggleHandler = muteToggleHandler.bind(this);
+      this.settingsList.appendChild(muteItem);
+      this.muteToggle.addEventListener("click", muteToggleHandler);
     }
 
-    this.checkSettingsChange();
-  },
-
-  checkSettingsChange: function () {
+  }
+  checkSettingsChange() {
     if (!this.el.settings) return;
     const settingsEvent = new CustomEvent("settings-change");
     //initialize settings
@@ -628,8 +665,8 @@ AFRAME.registerComponent("ui-system", {
     setInterval(() => {
       //copy settings into new object
       const settings = { ...this.el.settings };
-      for(let key in settings) {
-        if(settings[key] !== oldSettings[key]) {
+      for (let key in settings) {
+        if (settings[key] !== oldSettings[key]) {
           window.dispatchEvent(settingsEvent);
         }
       }
@@ -646,22 +683,42 @@ AFRAME.registerComponent("ui-system", {
       }
       oldSettings = { ...settings };
     }, 25);
-  },
+  }
 
-  toggleSceneMute: function () {
-    if (this.el.settings.mute === true) {
-      this.muteToggle.checked = true;
-      this.setSceneVolume(0);
-    } else {
-      this.muteToggle.checked = false;
-      this.setSceneVolume(this.el.settings.volume);
+  parsePreferences(string) {
+    if (!string) return null;
+    string = string.split(",");
+    let settings = [];
+    for (let item of string) {
+      item = item.trim();
+      settings.push(item);
     }
-  },
+    return settings;
+  }
 
-  setSceneVolume: function (volume) {
+  // gets settings from attribute on element and replaces default settings
+  parseSystemSettings(string, initial) {
+    const customSettings = this.createAttributeObjects(string);
+    if (!customSettings) return null;
+    for (let item in customSettings) {
+      if (customSettings[item] === "true" || customSettings[item] === "false") {
+        customSettings[item] = customSettings[item] === "true";
+      }
+      customSettings[item] =
+        customSettings[item] === "null" ? null : customSettings[item];
+      if (initial[item] !== undefined) {
+        if (initial[item] !== customSettings[item]) {
+          initial[item] = customSettings[item];
+        }
+      }
+    }
+    return initial;
+  }
+
+  setSceneVolume(volume) {
     let audios = document.querySelectorAll("audio");
     let videos = document.querySelectorAll("video");
-    const audioListener = this.el.sceneEl.camera.children[0];
+    const audioListener = this.sceneEl.camera.children[0];
     if (audioListener) {
       audioListener.setMasterVolume(volume);
     }
@@ -669,9 +726,19 @@ AFRAME.registerComponent("ui-system", {
     for (let sound of sounds) {
       sound.volume = volume;
     }
-  },
+  }
 
-  toggleVoice: function () {
+  toggleSceneMute() {
+    if (this.el.settings.mute === true) {
+      this.muteToggle.checked = true;
+      this.setSceneVolume(0);
+    } else {
+      this.muteToggle.checked = false;
+      this.setSceneVolume(this.el.settings.volume);
+    }
+  }
+
+  toggleVoice() {
     const isOn = this.voiceBtn.classList.contains("on");
     console.log(isOn);
     if (isOn) {
@@ -683,38 +750,69 @@ AFRAME.registerComponent("ui-system", {
       this.voiceBtn.classList.add("on");
       this.adapter.enableMicrophone(true);
     }
-  },
+  }
 
-  sendMessage: function () {
+  messageSubscribe(senderId, dataType, data) {
+    const message = document.createElement("p");
+    const sender = document.createElement("span");
+    message.classList.add("message");
+    sender.classList.add("message-sender");
+
+    sender.innerText = `${data.sender}:`;
+    message.innerText += data.txt;
+    message.appendChild(sender);
+    this.chat.appendChild(message);
+  }
+
+  sendMessage() {
     const value = this.chatInput.value;
     if (value.length > 0) {
       const message = document.createElement("p");
-      message.innerText = value;
+      const sender = document.createElement("span");
+      message.classList.add("message");
+      sender.classList.add("message-sender");
+      sender.innerText = `${NAF.clientId}:` || "me:";
+      message.innerText += value;
+      message.insertBefore(sender, message.firstChild);
       this.chat.appendChild(message);
       this.chatInput.value = "";
-      NAF.connection.broadcastData("chat", { txt: value });
+      NAF.connection.broadcastData("chat", {
+        txt: value,
+        sender: NAF.clientId || "NA",
+      });
     }
-  },
+  }
 
-  messageSubscribe: function (senderId, dataType, data, targetId) {
-    const message = document.createElement("p");
-    message.innerText = data.txt;
-    this.chat.appendChild(message);
-  },
+  createAttributeObjects(string) {
+    if (!string) return null;
+    console.log(string);
+    string = string.split(";");
+    let object = {};
+    for (let item of string) {
+      let values = item.split(":");
+      if (!values) continue;
+      values[0] = values[0].trim();
+      if (!values[1]) continue;
+      values[1] = values[1].trim();
+      object[values[0]] = values[1];
+    }
+    console.log(object);
+    return object;
+  }
 
-  bindHandlers: function () {
+  bindHandlers() {
     this.toggleSceneMute = this.toggleSceneMute.bind(this);
     this.toggleVoice = this.toggleVoice.bind(this);
     this.messageSubscribe = this.messageSubscribe.bind(this);
     this.sendMessage = this.sendMessage.bind(this);
-  },
-});
-
-// called when Networked Aframe Connects to the server
-function onConnect() {
-  const uiSystem = document.querySelector("[ui-system]");
-  if(uiSystem)
-    uiSystem.components["ui-system"].initialize();
+  }
 }
 
+
+addEventListener("DOMContentLoaded", () => {
+  const systemEl = document.querySelector("artfx-systems");
+  if (systemEl) {
+    systemEl["artfx-system"] = new UISystem();
+  }
+});
 // ----------------------------------------------------------------END OF UI AND SETTINGS SYSTEM ----------------------------------------------------------------
